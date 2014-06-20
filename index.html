@@ -25,6 +25,12 @@
 			border-bottom: 2px solid black;
 		}
 
+		div#result, div#retry, div#loader {
+			font-family: sans-serif;
+			text-align: center;
+			padding: 20px;
+		}
+
 		div#link, div#vanilla {
 		    text-align: center;
 		    padding: 10px;
@@ -43,7 +49,13 @@
 		}
 
 		a:visited {
-		color: white;
+			color: white;
+		}
+
+		div#retry a, div#result a, div#result a:visited {
+			color: #0000EE;
+			text-transform: none;
+			text-decoration: underline;
 		}
 		</style>
 	</head>
@@ -54,16 +66,29 @@
 			<div id="header">
 			</div>
 
-			<h1 id="text"></h1>
+			<h1 id="text">I looked into your soul</h1>
 			<br>
-			<div id="link">
-			    
+			<div id="hider">
+				<div id="link">
+					<a href="#" id="visited">See result</a>
+				</div>
+				
+				<div id="vanilla">
+					<a href="#" id="unvisited">See result</a>
+				</div>
+			</div>
+
+			<div id="loader">
+				loading...
+			</div>
+
+			<div id="result">
 			</div>
 			
-			<div id="vanilla">
-
+			<div id="retry">
+				<a href="#" onclick="init()">retry with another website</a>
 			</div>
-
+			
 			<div id="footer">
 			</div>
 
@@ -77,90 +102,60 @@
 				"https://www.hublo.com/",
 				"http://www.zombo.com/"
 			],
-
-				texts = [
-				"Do you like magic tricks?",
-				"Do you think I can read your mind?",
-				"You do it to yourself...",
-				"It's not too late to quit",
-				"And now to the results"
-			],
-
-				answers = [
-				"yes",
-				"no",
-				"whatever...",
-				"it is.",
-				"finally!"
-			],
-
-				visited = [],
-				unvisited = [],
 				i = 0;
 
-			document.getElementById("link").addEventListener("click", a, false);
-			document.getElementById("vanilla").addEventListener("click", b, false);
+			function init() {
+				document.getElementById('retry').style.display = 'none';
+				document.getElementById('result').style.display = 'none';
+				i = Math.floor(Math.random()*sites.length);
 
-			function a (e) {
+				document.getElementById('hider').style.display = 'none';
+				document.getElementById('loader').style.display = 'block';
+				document.getElementById('text').textContent = 'Soul searching';
+
+				document.getElementById("link").addEventListener("click", a, false);
+				document.getElementById("vanilla").addEventListener("click", a, false);
+				document.getElementById("visited").href = sites[i];
+				document.getElementById("unvisited").href = sites[i];
+
+				window.setTimeout(function() {
+					document.getElementById('hider').style.display = 'block';
+					document.getElementById('loader').style.display = 'none';
+					document.getElementById('text').textContent = 'I looked into your soul';
+				}, 1200);
+			}
+
+			function a(e) {
 				e.preventDefault();
-			    visited.push(sites[i]);
-			    i++;
-			    next();
-			};
-
-			function b (e) {
-			    e.preventDefault();
-			    unvisited.push(sites[i]);
-			    i++;
-			    next();				
-			};
-			    
-			
-			function next() {
-				if (i==5) {
-					results();
-					return;
-				}
-
-				document.getElementById('text').textContent = texts[i] + ' (' + (i+1) + '/5)';
-
-				var l = document.createElement("a");
-				l.href = sites[i];
-				l.textContent = answers[i];
-
-				var l2 = document.createElement("a");
-				l2.href = sites[i];
-				l2.textContent = answers[i];
-
-				document.getElementById('link').innerHTML = "";
-				document.getElementById('vanilla').innerHTML = "";
-				document.getElementById('link').appendChild(l);
-				document.getElementById('vanilla').appendChild(l2);
+			    if (e.target.id == 'link' || e.target.id == 'visited') {
+			    	results(true, sites[i]);
+			    } else {
+			    	results(false, sites[i]);
+			    }
 			}
 
-			function results() {
-				var vis = '';
+			function results(visited, url) {
+				document.getElementById('retry').style.display = 'block';
+				document.getElementById('result').style.display = 'block';
+				document.getElementById('hider').style.display = 'none';
+				document.getElementById('loader').style.display = 'none';
+				document.getElementById('text').textContent = 'Result';
 
-				for (var i in visited) {
-					vis += '<a target="_blank" href="'+visited[i]+'">'+visited[i]+'</a><br>';
-				}
+				var l = document.createElement('a');
+				l.href = url;
+				l.target = '_blank';
+				l.textContent = url;
+				var s = document.createElement('span');
+				s.textContent = 'You ' + (visited ? 'alredy have' : 'never') + ' visited: ';
 
-				var uvis = '';
 
-				for (var i in unvisited) {
-					uvis += '<a target="_blank" href="'+unvisited[i]+'">'+unvisited[i]+'</a><br>';
-				}
 
-				document.getElementById("link").removeEventListener("click", a);
-				document.getElementById("vanilla").removeEventListener("click", b);
-
-				document.getElementById('text').textContent = 'You visited the following website(s):';
-				document.getElementById('link').innerHTML = vis;
-
-				document.getElementById('vanilla').innerHTML = '<h1>But not the following:</h1>' + uvis;
+				document.getElementById('result').innerHTML = '';
+				document.getElementById('result').appendChild(s);
+				document.getElementById('result').appendChild(l);
 			}
 
-			next();
+			init();
 		</script>
 	</body>
 </html>
