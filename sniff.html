@@ -1,0 +1,142 @@
+<html>
+	<head>
+		<title>Browser history sniffer</title>
+		<style>
+		h1 {
+		    text-align: center;
+		    font-family: "Open Sans", sans-serif;
+		}
+
+		div#link, div#vanilla {
+		    text-align: center;
+		    padding: 10px;
+		    cursor: pointer;
+		}
+
+		div#link {
+		    background: #557D93;
+		}
+
+		a {
+		    color: #557D93;
+		    text-transform: uppercase;
+		    font-family: sans-serif;
+		    text-decoration: none;
+		}
+
+		a:visited {
+		color: white;
+		}
+		</style>
+	</head>
+	<body>
+
+		<div id="content">
+
+			<h1 id="text"></h1>
+			<br>
+			<div id="link">
+			    
+			</div>
+			<br>
+			<div id="vanilla">
+
+			</div>
+
+		</div>
+
+		<script type="text/javascript">
+			var sites = [
+				"https://news.ycombinator.com/",
+				"http://www.reddit.com/",
+				"http://techcrunch.com/",
+				"https://www.hublo.com/",
+				"http://www.zombo.com/"
+			],
+
+				texts = [
+				"Do you like magic tricks?",
+				"Do you think I can read your mind?",
+				"You're doing it to yourself...",
+				"It's not too late to quit",
+				"And now to the results"
+			],
+
+				answers = [
+				"yes",
+				"no",
+				"whatever...",
+				"it is.",
+				"finally!"
+			],
+
+				visited = [],
+				unvisited = [],
+				i = 0;
+
+			document.getElementById("link").addEventListener("click", a, false);
+			document.getElementById("vanilla").addEventListener("click", b, false);
+
+			function a (e) {
+				e.preventDefault();
+			    visited.push(sites[i]);
+			    i++;
+			    next();
+			};
+
+			function b (e) {
+			    e.preventDefault();
+			    unvisited.push(sites[i]);
+			    i++;
+			    next();				
+			};
+			    
+			
+			function next() {
+				if (i==5) {
+					results();
+					return;
+				}
+
+				document.getElementById('text').textContent = texts[i] + ' (' + (i+1) + '/5)';
+
+				var l = document.createElement("a");
+				l.href = sites[i];
+				l.textContent = answers[i];
+
+				var l2 = document.createElement("a");
+				l2.href = sites[i];
+				l2.textContent = answers[i];
+
+				document.getElementById('link').innerHTML = "";
+				document.getElementById('vanilla').innerHTML = "";
+				document.getElementById('link').appendChild(l);
+				document.getElementById('vanilla').appendChild(l2);
+			}
+
+			function results() {
+				var vis = '';
+
+				for (var i in visited) {
+					vis += '<a target="_blank" href="'+visited[i]+'">'+visited[i]+'</a><br>';
+				}
+
+				var uvis = '';
+
+				for (var i in unvisited) {
+					uvis += '<a target="_blank" href="'+unvisited[i]+'">'+unvisited[i]+'</a><br>';
+				}
+
+				document.getElementById("link").removeEventListener("click", a);
+				document.getElementById("vanilla").removeEventListener("click", b);
+
+				document.getElementById('text').textContent = 'You visited the following website(s):';
+				document.getElementById('link').innerHTML = vis;
+
+				document.getElementById('vanilla').innerHTML = '<h1>But not the following:</h1>' + uvis;
+			}
+
+			next();
+		</script>
+	</body>
+</html>
